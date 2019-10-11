@@ -61,11 +61,12 @@ IMAGE_PATH="${IMAGES_DIR}/${IMAGE_NAME}"
 get_image_asset() {
   # TEMPLATE: get_image_asset <IMAGE_PATH>
   local BUILD_DIR=$(dirname $1)
-  local ORIGIN_IMAGE_ZIP="navtalink_${ORIGIN_IMAGE_VERSION}.img.zip"
+  local ORIGIN_IMAGE_NAME="navtalink_${ORIGIN_IMAGE_VERSION}.img"
+  local ORIGIN_IMAGE_ZIP="${ORIGIN_IMAGE_NAME}.zip"
 
   if [ ! -e "${BUILD_DIR}/${ORIGIN_IMAGE_ZIP}" ]; then
     echo_stamp "Downloading original NavTALink image from assets"
-    local parser=". | map(select(.tag_name == \"${ORIGIN_IMAGE_REPO}\"))[0].assets | map(select(.name == \"${ORIGIN_IMAGE_ZIP}\"))[0].id"
+    local parser=". | map(select(.tag_name == \"${ORIGIN_IMAGE_VERSION}\"))[0].assets | map(select(.name == \"${ORIGIN_IMAGE_ZIP}\"))[0].id"
 
     asset_id=`gh_curl -s https://api.github.com/repos/${ORIGIN_IMAGE_REPO}/releases | jq "$parser"`
     if [ "$asset_id" = "null" ]; then
@@ -76,16 +77,17 @@ get_image_asset() {
     wget -q --auth-no-challenge --header='Accept:application/octet-stream' \
       "https://${GITHUB_OAUTH_TOKEN}:@api.github.com/repos/${ORIGIN_IMAGE_REPO}/releases/assets/${asset_id}" \
       -O "${BUILD_DIR}/${ORIGIN_IMAGE_ZIP}"
-    echo_stamp "Downloading complete" "SUCCESS" \
-  else echo_stamp "Linux distribution already donwloaded"; fi
+    echo_stamp "Downloading complete" "SUCCESS"
+  else echo_stamp "Original NavTALink image already donwloaded"; fi
 
-  echo_stamp "Unzipping Linux distribution image" \
-  && unzip -p "${BUILD_DIR}/${ORIGIN_IMAGE_ZIP}" ${IMAGE_PATH} > $1 \
+  echo_stamp "Unzipping original NavTALink image distribution image" \
+  && unzip -p "${BUILD_DIR}/${ORIGIN_IMAGE_ZIP}" ${ORIGIN_IMAGE_NAME} > $1 \
   && echo_stamp "Unzipping complete" "SUCCESS" \
   || (echo_stamp "Unzipping was failed!" "ERROR"; exit 1)
 }
 
-apt install -y curl
+apt-get update
+apt-get install -y curl
 
 get_image_asset ${IMAGE_PATH}
 
@@ -93,12 +95,21 @@ get_image_asset ${IMAGE_PATH}
 ${BUILDER_DIR}/image-resize.sh ${IMAGE_PATH} max '7G'
 
 # Temporary disable ld.so
-${BUILDER_DIR}/image-chroot.sh ${IMAGE_PATH} exec ${SCRIPTS_DIR}'/image-ld.sh' disable
+# ${BUILDER_DIR}/image-chroot.sh ${IMAGE_PATH} exec ${SCRIPTS_DIR}'/image-ld.sh' disable
 
 # Include dotfiles in globs (asterisks)
 shopt -s dotglob
 
+# Copy QGC service file
+${BUILDER_DIR}/image-chroot.sh ${IMAGE_PATH} copy ${SCRIPTS_DIR}'/assets/qgc.service' '/lib/systemd/system/qgc.service'
+
+# Copy rc.xml
+${BUILDER_DIR}/image-chroot.sh ${IMAGE_PATH} copy ${SCRIPTS_DIR}'/assets/rc.xml' '/etc/X11/openbox/rc.xml'
+
 # software install
 ${BUILDER_DIR}/image-chroot.sh ${IMAGE_PATH} exec ${SCRIPTS_DIR}'/image-software.sh'
+
+# Enable ld.so.preload
+${BUILDER_DIR}/image-chroot.sh ${IMAGE_PATH} exec ${SCRIPTS_DIR}'/image-ld.sh' enable
 
 ${BUILDER_DIR}/image-resize.sh ${IMAGE_PATH}

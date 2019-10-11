@@ -58,4 +58,21 @@ echo_stamp "Update apt"
 apt-get update
 #&& apt upgrade -y
 
+echo_stamp "Software installing"
+apt-get install --no-install-recommends -y \
+openbox \
+qtvirtualkeyboard-plugin \
+xsltproc \
+&& echo_stamp "Everything was installed!" "SUCCESS" \
+|| (echo_stamp "Some packages wasn't installed!" "ERROR"; exit 1)
+
+echo_stamp "Configure services"
+systemctl enable qgc \
+|| (echo_stamp "Failed to configure services!" "ERROR"; exit 1)
+
+echo_stamp "Set GS role"
+cp -f /home/pi/navtalink/wifibroadcast.cfg.gs /boot/wifibroadcast.txt \
+&& systemctl enable wifibroadcast@gs \
+|| (echo_stamp "Failed to set role!" "ERROR"; exit 1)
+
 echo_stamp "End of software installation"
