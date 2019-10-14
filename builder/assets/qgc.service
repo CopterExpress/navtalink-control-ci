@@ -8,7 +8,7 @@ User=pi
 Environment="DISPLAY=:0"
 Environment="XAUTHORITY=/home/pi/.Xauthority"
 Environment="QT_IM_MODULE=qtvirtualkeyboard"
-ExecStart=/home/pi/coex-qgc/qgroundcontrol/build/release/qgroundcontrol-start.sh
+ExecStart=/home/pi/qgroundcontrol/qgroundcontrol-start.sh
 Restart=always
 RestartSec=1
 

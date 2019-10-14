@@ -749,8 +749,8 @@
   # end of the example
 -->
   <application name="QGroundControl">
-    <fullscreen>yes</fullscreen>
     <maximized>true</maximized>
+    <fullscreen>yes</fullscreen>
   </application>
 </applications>
 

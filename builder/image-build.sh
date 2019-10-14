@@ -89,9 +89,9 @@ get_image_asset() {
   if [ ! -e "${BUILD_DIR}/${ORIGIN_IMAGE_ZIP}" ]; then
     echo_stamp "Downloading original NavTALink image from assets"
     get_asset "${ORIGIN_IMAGE_REPO}" "${ORIGIN_IMAGE_VERSION}" "${ORIGIN_IMAGE_ZIP}" "${BUILD_DIR}/${ORIGIN_IMAGE_ZIP}"
-  else echo_stamp "Original NavTALink image already donwloaded"; fi
+  else echo_stamp "Original NavTALink image already downloaded"; fi
 
-  echo_stamp "Unzipping original NavTALink image distribution image" \
+  echo_stamp "Unzipping original NavTALink image" \
   && unzip -p "${BUILD_DIR}/${ORIGIN_IMAGE_ZIP}" ${ORIGIN_IMAGE_NAME} > $1 \
   && echo_stamp "Unzipping complete" "SUCCESS" \
   || (echo_stamp "Unzipping was failed!" "ERROR"; exit 1)
@@ -111,11 +111,19 @@ ${BUILDER_DIR}/image-resize.sh ${IMAGE_PATH} max '7G'
 # Include dotfiles in globs (asterisks)
 shopt -s dotglob
 
+${BUILDER_DIR}/image-chroot.sh ${IMAGE_PATH} exec ${SCRIPTS_DIR}'/image-init.sh' ${ORIGIN_IMAGE_VERSION} ${IMAGE_NAME}
+
 # Copy QGC service file
 ${BUILDER_DIR}/image-chroot.sh ${IMAGE_PATH} copy ${SCRIPTS_DIR}'/assets/qgc.service' '/lib/systemd/system/qgc.service'
 
 # Copy rc.xml
 ${BUILDER_DIR}/image-chroot.sh ${IMAGE_PATH} copy ${SCRIPTS_DIR}'/assets/rc.xml' '/etc/X11/openbox/rc.xml'
+${BUILDER_DIR}/image-chroot.sh ${IMAGE_PATH} copy ${SCRIPTS_DIR}'/assets/rc.xml' '/home/pi/.config/openbox/rc.xml'
+
+# Download QGroundControl distribution and copy to to chroot
+echo_stamp "Downloading QGroundControl distribution"
+get_asset "${QGC_REPO}" "${QGC_VERSION}" "${QGC_ASSET}" "${LIB_DIR}/${QGC_ASSET}"
+${BUILDER_DIR}/image-chroot.sh ${IMAGE_PATH} copy "${LIB_DIR}/${QGC_ASSET}" "/home/pi/${QGC_ASSET}"
 
 # software install
 ${BUILDER_DIR}/image-chroot.sh ${IMAGE_PATH} exec ${SCRIPTS_DIR}'/image-software.sh'

@@ -27,7 +27,12 @@ jobs:
     - if [ -n "$(ls -A imgcache/*.zip)" ]; then mkdir -p images && cp imgcache/*.zip
       images; fi
     script:
-    - docker run --privileged --rm -v /dev:/dev -v $(pwd):/builder/repo -e TRAVIS_TAG="${TRAVIS_TAG}" -e ORIGIN_IMAGE_VERSION="${ORIGIN_IMAGE_VERSION}" -e ORIGIN_IMAGE_REPO="${ORIGIN_IMAGE_REPO}" -e GITHUB_OAUTH_TOKEN="${GITHUB_OAUTH_TOKEN}"
+    - docker run --privileged --rm -v /dev:/dev -v $(pwd):/builder/repo
+      -e TRAVIS_TAG="${TRAVIS_TAG}" -e ORIGIN_IMAGE_VERSION="${ORIGIN_IMAGE_VERSION}"
+      -e ORIGIN_IMAGE_REPO="${ORIGIN_IMAGE_REPO}"
+      -e GITHUB_OAUTH_TOKEN="${GITHUB_OAUTH_TOKEN}"
+      -e QGC_REPO="${QGC_REPO}" -e QGC_VERSION="${QGC_VERSION}"
+      -e QGC_ASSET="${QGC_ASSET}"
       ${DOCKER}
     before_cache:
     - cp images/*.zip imgcache

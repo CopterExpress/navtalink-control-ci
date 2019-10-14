@@ -61,10 +61,20 @@ apt-get update
 echo_stamp "Software installing"
 apt-get install --no-install-recommends -y \
 openbox \
+libqt5concurrent5 \
 qtvirtualkeyboard-plugin \
-xsltproc \
+lightdm \
+libsdl2-dev \
+gstreamer1.0-libav \
+xinit \
+xserver-xorg \
 && echo_stamp "Everything was installed!" "SUCCESS" \
 || (echo_stamp "Some packages wasn't installed!" "ERROR"; exit 1)
+
+echo_stamp "Unpack QGroundControl"
+tar xf "/home/pi/${QGC_ASSET}" -C /home/pi \
+&& rm "/home/pi/${QGC_ASSET}" \
+|| (echo_stamp "Failed to unpack QGroundControl!" "ERROR"; exit 1)
 
 echo_stamp "Configure services"
 systemctl enable qgc \
@@ -74,5 +84,8 @@ echo_stamp "Set GS role"
 cp -f /home/pi/navtalink/wifibroadcast.cfg.gs /boot/wifibroadcast.txt \
 && systemctl enable wifibroadcast@gs \
 || (echo_stamp "Failed to set role!" "ERROR"; exit 1)
+
+echo_stamp "Reset wifibroadcast interface name"
+sed -i "s/^\(WFB_NICS=\"\).*$/\1\"/" /etc/default/wifibroadcast
 
 echo_stamp "End of software installation"
