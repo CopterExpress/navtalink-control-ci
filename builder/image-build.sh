@@ -58,6 +58,28 @@ REPO_NAME="navtalink-control-ci"
 IMAGE_NAME="navtalink-control_${IMAGE_VERSION}.img"
 IMAGE_PATH="${IMAGES_DIR}/${IMAGE_NAME}"
 
+get_asset() {
+  # TEMPLATE: get_asset <REPO_NAME> <VERSION> <ASSET_NAME> <OUTPUT_FILE>
+  local REPO_NAME="$1"
+  local VERSION="$2"
+  local ASSET_NAME="$3"
+  local OUTPUT_FILE="$4"
+
+  echo_stamp "Downloading \"$ASSET_NAME\" from assets ($REPO_NAME:$VERSION)"
+  local parser=". | map(select(.tag_name == \"${VERSION}\"))[0].assets | map(select(.name == \"${ASSET_NAME}\"))[0].id"
+
+  asset_id=`gh_curl -s https://api.github.com/repos/${REPO_NAME}/releases | jq "$parser"`
+  if [ "$asset_id" = "null" ]; then
+    echo "ERROR: version not found ${VERSION}"
+    exit 1
+  fi;
+
+  wget -q --auth-no-challenge --header='Accept:application/octet-stream' \
+    "https://${GITHUB_OAUTH_TOKEN}:@api.github.com/repos/${REPO_NAME}/releases/assets/${asset_id}" \
+    -O "${OUTPUT_FILE}"
+  echo_stamp "Downloading complete" "SUCCESS"
+}
+
 get_image_asset() {
   # TEMPLATE: get_image_asset <IMAGE_PATH>
   local BUILD_DIR=$(dirname $1)
@@ -66,18 +88,7 @@ get_image_asset() {
 
   if [ ! -e "${BUILD_DIR}/${ORIGIN_IMAGE_ZIP}" ]; then
     echo_stamp "Downloading original NavTALink image from assets"
-    local parser=". | map(select(.tag_name == \"${ORIGIN_IMAGE_VERSION}\"))[0].assets | map(select(.name == \"${ORIGIN_IMAGE_ZIP}\"))[0].id"
-
-    asset_id=`gh_curl -s https://api.github.com/repos/${ORIGIN_IMAGE_REPO}/releases | jq "$parser"`
-    if [ "$asset_id" = "null" ]; then
-      echo "ERROR: version not found ${ORIGIN_IMAGE_VERSION}"
-      exit 1
-    fi;
-
-    wget -q --auth-no-challenge --header='Accept:application/octet-stream' \
-      "https://${GITHUB_OAUTH_TOKEN}:@api.github.com/repos/${ORIGIN_IMAGE_REPO}/releases/assets/${asset_id}" \
-      -O "${BUILD_DIR}/${ORIGIN_IMAGE_ZIP}"
-    echo_stamp "Downloading complete" "SUCCESS"
+    get_asset "${ORIGIN_IMAGE_REPO}" "${ORIGIN_IMAGE_VERSION}" "${ORIGIN_IMAGE_ZIP}" "${BUILD_DIR}/${ORIGIN_IMAGE_ZIP}"
   else echo_stamp "Original NavTALink image already donwloaded"; fi
 
   echo_stamp "Unzipping original NavTALink image distribution image" \
