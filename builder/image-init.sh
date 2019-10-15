@@ -48,16 +48,12 @@ SUDO_USER=pi /usr/bin/raspi-config nonint do_boot_behaviour B4
 echo_stamp "#2 Increase GPU memory"
 /usr/bin/raspi-config nonint do_memory_split 256
 
-# 4. Set OpenGL driver
+# 3. Set OpenGL driver
 echo_stamp "#3 Set OpenGL driver"
 # /usr/bin/raspi-config nonint do_gldriver G2
 echo "dtoverlay=vc4-fkms-v3d" >> /boot/config.txt
 
-# 3. Disable waiting for network
-echo_stamp "#4 Disable waiting for network"
-/usr/bin/raspi-config nonint do_boot_wait 1
-
-echo_stamp "#5 End of configure hardware interfaces"
+echo_stamp "#4 End of configure hardware interfaces"
 EOT
 
 echo_stamp "End of init image"

@@ -85,7 +85,4 @@ cp -f /home/pi/navtalink/wifibroadcast.cfg.gs /boot/wifibroadcast.txt \
 && systemctl enable wifibroadcast@gs \
 || (echo_stamp "Failed to set role!" "ERROR"; exit 1)
 
-echo_stamp "Reset wifibroadcast interface name"
-sed -i "s/^\(WFB_NICS=\"\).*$/\1\"/" /etc/default/wifibroadcast
-
 echo_stamp "End of software installation"
