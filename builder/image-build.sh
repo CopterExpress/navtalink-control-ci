@@ -106,7 +106,7 @@ get_image_asset ${IMAGE_PATH}
 ${BUILDER_DIR}/image-resize.sh ${IMAGE_PATH} max '7G'
 
 # Temporary disable ld.so
-# ${BUILDER_DIR}/image-chroot.sh ${IMAGE_PATH} exec ${SCRIPTS_DIR}'/image-ld.sh' disable
+${BUILDER_DIR}/image-chroot.sh ${IMAGE_PATH} exec ${SCRIPTS_DIR}'/image-ld.sh' disable
 
 # Include dotfiles in globs (asterisks)
 shopt -s dotglob
