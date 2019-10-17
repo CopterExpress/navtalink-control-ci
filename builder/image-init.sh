@@ -34,9 +34,9 @@ echo_stamp() {
 echo_stamp "Write NavTALink control information"
 
 # NavTALink Control image version
-echo "$1" >> /etc/navtalink_control
+echo "$1" >> /etc/nc_version
 # Origin image file name
-echo "${2%.*}" >> /etc/navtalink_control_origin
+echo "${2%.*}" >> /etc/nc_origin
 
 cat <<EOT >> /root/hardware_setup.sh
 

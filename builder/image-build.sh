@@ -111,7 +111,7 @@ ${BUILDER_DIR}/image-chroot.sh ${IMAGE_PATH} exec ${SCRIPTS_DIR}'/image-ld.sh' d
 # Include dotfiles in globs (asterisks)
 shopt -s dotglob
 
-${BUILDER_DIR}/image-chroot.sh ${IMAGE_PATH} exec ${SCRIPTS_DIR}'/image-init.sh' ${ORIGIN_IMAGE_VERSION} ${IMAGE_NAME}
+${BUILDER_DIR}/image-chroot.sh ${IMAGE_PATH} exec ${SCRIPTS_DIR}'/image-init.sh' ${ORIGIN_IMAGE_VERSION} ${ORIGIN_IMAGE_VERSION}
 
 # Copy QGC service file
 ${BUILDER_DIR}/image-chroot.sh ${IMAGE_PATH} copy ${SCRIPTS_DIR}'/assets/qgc.service' '/lib/systemd/system/qgc.service'
