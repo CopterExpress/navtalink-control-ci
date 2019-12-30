@@ -125,6 +125,8 @@ echo_stamp "Downloading QGroundControl distribution"
 get_asset "${QGC_REPO}" "${QGC_VERSION}" "${QGC_ASSET}" "${LIB_DIR}/${QGC_ASSET}"
 ${BUILDER_DIR}/image-chroot.sh ${IMAGE_PATH} copy "${LIB_DIR}/${QGC_ASSET}" "/home/pi/${QGC_ASSET}"
 
+# Copy updated config for wifibroadcast
+${BUILDER_DIR}/image-chroot.sh ${IMAGE_PATH} copy ${SCRIPTS_DIR}'/assets/wifibroadcast.cfg.gs' '/home/pi/navtalink/wifibroadcast.cfg.gs'
 # software install
 ${BUILDER_DIR}/image-chroot.sh ${IMAGE_PATH} exec ${SCRIPTS_DIR}'/image-software.sh'
 
