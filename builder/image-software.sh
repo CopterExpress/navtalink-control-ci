@@ -85,4 +85,8 @@ cp -f /home/pi/navtalink/wifibroadcast.cfg.gs /boot/wifibroadcast.txt \
 && systemctl enable wifibroadcast@gs \
 || (echo_stamp "Failed to set role!" "ERROR"; exit 1)
 
+echo_stamp "Change files owner"
+chown -R pi:pi /home/pi/.config \
+|| (echo_stamp "Failed to change files owner!" "ERROR"; exit 1)
+
 echo_stamp "End of software installation"
