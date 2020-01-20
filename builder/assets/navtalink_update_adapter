@@ -1,0 +1,48 @@
+#! /usr/bin/env bash
+
+#
+# Updates WiFi adapter for wifibrodcast.
+#
+# Copyright (C) 2020 Copter Express Technologies
+#
+# Author: Andrey Dvornikov <dvornikov-aa@yandex.ru>
+#
+
+set -e # Exit immidiately on non-zero result
+
+if [[ $EUID -ne 0 ]]; then
+   echo "This script must be run as root" 
+   exit 1
+fi
+
+wifi_adapters=($(iw dev | awk '$1=="Interface"{print $2}'))
+case ${#wifi_adapters[*]} in
+    1 )
+        echo "External WiFi adapter is not found!"
+        exit 1
+        ;;
+    2 )
+        ;;
+    * )
+        echo "More than one WiFi adapter! Write the correct adapter manually in /etc/default/wifibroadcast."
+        exit 1
+        ;;
+esac
+
+internal_wifi_re="wlan[[:digit:]]+"
+if [[ ${wifi_adapters[0]} =~ $internal_wifi_re ]]
+then
+    if [[ ${wifi_adapters[1]} =~ $internal_wifi_re ]]
+    then
+        echo "None of interfaces have a predictable name!"
+        exit 1
+    else
+        wifi_adapter=${wifi_adapters[1]}
+    fi
+else
+    wifi_adapter=${wifi_adapters[0]}
+fi
+
+sed -i "s/^\(WFB_NICS=\"\).*$/\1$wifi_adapter\"/" /etc/default/wifibroadcast
+crudini --set /etc/NetworkManager/NetworkManager.conf 'keyfile' 'unmanaged-devices' "interface-name:$wifi_adapter"
+echo "wifibroadcast adapter: \"$wifi_adapter\""

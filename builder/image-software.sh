@@ -58,6 +58,18 @@ echo_stamp "Update apt"
 apt-get update
 #&& apt upgrade -y
 
+echo_stamp "Remove packages from the base image"
+apt-get purge -y \
+dhcpcd5 \
+openresolv \
+&& echo_stamp "Everything was removed!" "SUCCESS" \
+|| (echo_stamp "Some packages wasn't removed!" "ERROR"; exit 1)
+
+echo_stamp "Autoremove packages"
+apt-get autoremove -y \
+&& echo_stamp "Autoremove has been completed!" "SUCCESS" \
+|| (echo_stamp "Failed to complete autoremove!" "ERROR"; exit 1)
+
 echo_stamp "Software installing"
 apt-get install --no-install-recommends -y \
 openbox \
@@ -68,6 +80,13 @@ libsdl2-dev \
 gstreamer1.0-libav \
 xinit \
 xserver-xorg \
+network-manager \
+network-manager-openvpn \
+network-manager-gnome \
+xfce4-panel \
+onboard \
+qterminal \
+crudini \
 && echo_stamp "Everything was installed!" "SUCCESS" \
 || (echo_stamp "Some packages wasn't installed!" "ERROR"; exit 1)
 
@@ -84,6 +103,9 @@ echo_stamp "Set GS role"
 cp -f /home/pi/navtalink/wifibroadcast.cfg.gs /boot/wifibroadcast.txt \
 && systemctl enable wifibroadcast@gs \
 || (echo_stamp "Failed to set role!" "ERROR"; exit 1)
+
+echo_stamp "Add xfce4-panel to autostart"
+echo 'xfce4-panel' >> /home/pi/.config/openbox/autostart
 
 echo_stamp "Change files owner"
 chown -R pi:pi /home/pi/.config \

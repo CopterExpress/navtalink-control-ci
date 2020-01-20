@@ -111,6 +111,8 @@ ${BUILDER_DIR}/image-chroot.sh ${IMAGE_PATH} exec ${SCRIPTS_DIR}'/image-ld.sh' d
 # Include dotfiles in globs (asterisks)
 shopt -s dotglob
 
+${BUILDER_DIR}/image-chroot.sh ${IMAGE_PATH} copy ${SCRIPTS_DIR}'/assets/init_rpi.sh' '/root/'
+${BUILDER_DIR}/image-chroot.sh ${IMAGE_PATH} copy ${SCRIPTS_DIR}'/assets/hardware_setup.sh' '/root/'
 ${BUILDER_DIR}/image-chroot.sh ${IMAGE_PATH} exec ${SCRIPTS_DIR}'/image-init.sh' ${ORIGIN_IMAGE_VERSION} ${ORIGIN_IMAGE_VERSION}
 
 # Copy QGC service file
@@ -120,6 +122,12 @@ ${BUILDER_DIR}/image-chroot.sh ${IMAGE_PATH} copy ${SCRIPTS_DIR}'/assets/qgc.ser
 ${BUILDER_DIR}/image-chroot.sh ${IMAGE_PATH} copy ${SCRIPTS_DIR}'/assets/rc.xml' '/etc/X11/openbox/rc.xml'
 ${BUILDER_DIR}/image-chroot.sh ${IMAGE_PATH} copy ${SCRIPTS_DIR}'/assets/rc.xml' '/home/pi/.config/openbox/rc.xml'
 
+# Copy xfce configuration
+${BUILDER_DIR}/image-chroot.sh ${IMAGE_PATH} copy ${SCRIPTS_DIR}'/assets/xfce4' '/home/pi/.config/'
+
+# Copy new update adapter script
+${BUILDER_DIR}/image-chroot.sh ${IMAGE_PATH} copy ${SCRIPTS_DIR}'/assets/navtalink_update_adapter' '/usr/local/bin/navtalink_update_adapter'
+
 # Download QGroundControl distribution and copy to to chroot
 echo_stamp "Downloading QGroundControl distribution"
 get_asset "${QGC_REPO}" "${QGC_VERSION}" "${QGC_ASSET}" "${LIB_DIR}/${QGC_ASSET}"
@@ -127,8 +135,10 @@ ${BUILDER_DIR}/image-chroot.sh ${IMAGE_PATH} copy "${LIB_DIR}/${QGC_ASSET}" "/ho
 
 # Copy updated config for wifibroadcast
 ${BUILDER_DIR}/image-chroot.sh ${IMAGE_PATH} copy ${SCRIPTS_DIR}'/assets/wifibroadcast.cfg.gs' '/home/pi/navtalink/wifibroadcast.cfg.gs'
-# software install
+# Software install
 ${BUILDER_DIR}/image-chroot.sh ${IMAGE_PATH} exec ${SCRIPTS_DIR}'/image-software.sh'
+# Network setup
+${BUILDER_DIR}/image-chroot.sh ${IMAGE_PATH} exec ${SCRIPTS_DIR}'/image-network.sh'
 
 # Enable ld.so.preload
 ${BUILDER_DIR}/image-chroot.sh ${IMAGE_PATH} exec ${SCRIPTS_DIR}'/image-ld.sh' enable

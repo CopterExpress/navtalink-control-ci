@@ -3,7 +3,7 @@
 #
 # Script for network configure
 #
-# Copyright (C) 2019 Copter Express Technologies
+# Copyright (C) 2020 Copter Express Technologies
 #
 # Author: Artem Smirnov <urpylka@gmail.com>
 # Author: Andrey Dvornikov <dvornikov-aa@yandex.ru>
@@ -31,6 +31,10 @@ echo_stamp() {
   echo -e ${TEXT}
 }
 
-echo_stamp "#1 "
+echo "#1 Remove wpa_supplicant configurations"
+rm /etc/wpa_supplicant/wpa_supplicant-* || true
 
-echo_stamp "#2 End of network installation"
+echo "#2 Remove dnsmasq configuration"
+rm /etc/dnsmasq.conf || true
+
+echo_stamp "#3 End of network installation"

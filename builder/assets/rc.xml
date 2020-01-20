@@ -750,7 +750,9 @@
 -->
   <application name="QGroundControl">
     <maximized>true</maximized>
-    <fullscreen>yes</fullscreen>
+    <fullscreen>no</fullscreen>
+    <decor>no</decor>
+    <keepBorder>no</keepBorder>
   </application>
 </applications>
 

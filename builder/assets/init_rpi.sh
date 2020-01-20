@@ -1,7 +1,8 @@
 #! /usr/bin/env bash
 
 #
-# Script for initialisation image
+# Script for build the image. Used builder script of the target repo
+# For build: docker run --privileged -it --rm -v /dev:/dev -v $(pwd):/builder/repo smirart/builder
 #
 # Copyright (C) 2019 Copter Express Technologies
 #
@@ -31,11 +32,14 @@ echo_stamp() {
   echo -e ${TEXT}
 }
 
-echo_stamp "Write NavTALink control information"
+echo_stamp "Rename SSID"
+NEW_SSID='NAVTALINK-CONTROL-'$(head -c 100 /dev/urandom | xxd -ps -c 100 | sed -e "s/[^0-9]//g" | cut -c 1-4)
+navtalink_rename ${NEW_SSID}
 
-# NavTALink Control image version
-echo "$1" >> /etc/nc_version
-# Origin image file name
-echo "${2%.*}" >> /etc/nc_origin
+echo_stamp "Harware setup"
+/root/hardware_setup.sh
 
-echo_stamp "End of init image"
+echo_stamp "Remove init scripts"
+rm /root/init_rpi.sh /root/hardware_setup.sh
+
+echo_stamp "End of initialization of the image"
