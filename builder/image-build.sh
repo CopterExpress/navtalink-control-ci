@@ -128,6 +128,12 @@ ${BUILDER_DIR}/image-chroot.sh ${IMAGE_PATH} copy ${SCRIPTS_DIR}'/assets/xfce4' 
 # Copy new update adapter script
 ${BUILDER_DIR}/image-chroot.sh ${IMAGE_PATH} copy ${SCRIPTS_DIR}'/assets/navtalink_update_adapter' '/usr/local/bin/navtalink_update_adapter'
 
+# Copy COEX logo for nitrogen
+${BUILDER_DIR}/image-chroot.sh ${IMAGE_PATH} copy ${SCRIPTS_DIR}'/assets/coex_logo.jpg' '/home/pi/Documents/'
+# Copy nitrogen configs
+${BUILDER_DIR}/image-chroot.sh ${IMAGE_PATH} copy ${SCRIPTS_DIR}'/assets/bg-saved.cfg' '/home/pi/.config/nitrogen/'
+${BUILDER_DIR}/image-chroot.sh ${IMAGE_PATH} copy ${SCRIPTS_DIR}'/assets/nitrogen.cfg' '/home/pi/.config/nitrogen/'
+
 # Download QGroundControl distribution and copy to to chroot
 echo_stamp "Downloading QGroundControl distribution"
 get_asset "${QGC_REPO}" "${QGC_VERSION}" "${QGC_ASSET}" "${LIB_DIR}/${QGC_ASSET}"
@@ -139,6 +145,9 @@ ${BUILDER_DIR}/image-chroot.sh ${IMAGE_PATH} copy ${SCRIPTS_DIR}'/assets/wifibro
 ${BUILDER_DIR}/image-chroot.sh ${IMAGE_PATH} exec ${SCRIPTS_DIR}'/image-software.sh'
 # Network setup
 ${BUILDER_DIR}/image-chroot.sh ${IMAGE_PATH} exec ${SCRIPTS_DIR}'/image-network.sh'
+
+# Copy COEX logo for plymouth
+${BUILDER_DIR}/image-chroot.sh ${IMAGE_PATH} copy ${SCRIPTS_DIR}'/assets/debian-logo.png' '/usr/share/plymouth/'
 
 # Enable ld.so.preload
 ${BUILDER_DIR}/image-chroot.sh ${IMAGE_PATH} exec ${SCRIPTS_DIR}'/image-ld.sh' enable

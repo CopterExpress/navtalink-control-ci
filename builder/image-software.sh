@@ -87,6 +87,9 @@ xfce4-panel \
 onboard \
 qterminal \
 crudini \
+plymouth \
+plymouth-themes \
+nitrogen \
 && echo_stamp "Everything was installed!" "SUCCESS" \
 || (echo_stamp "Some packages wasn't installed!" "ERROR"; exit 1)
 
@@ -105,10 +108,28 @@ cp -f /home/pi/navtalink/wifibroadcast.cfg.gs /boot/wifibroadcast.txt \
 || (echo_stamp "Failed to set role!" "ERROR"; exit 1)
 
 echo_stamp "Add xfce4-panel to autostart"
-echo 'xfce4-panel' >> /home/pi/.config/openbox/autostart
+echo 'xfce4-panel &' >> /home/pi/.config/openbox/autostart
+
+echo_stamp "Add onboard to autostart"
+echo 'onboard &' >> /home/pi/.config/openbox/autostart
+
+echo_stamp "Add nitrogen to autostart"
+echo 'nitrogen --restore &' >> /home/pi/.config/openbox/autostart
+
+echo_stamp "Add nm-applet to autostart"
+echo 'nm-applet &' >> /home/pi/.config/openbox/autostart
+
+echo_stamp "Edit cmdline.txt"
+sed -i '1 s_$_ splash logo.nologo_' /boot/cmdline.txt \
+|| (echo_stamp "Failed to edit cmdline.txt!" "ERROR"; exit 1)
+
+echo_stamp "Edit plymouthd.conf"
+crudini --set /etc/plymouth/plymouthd.conf 'Daemon' 'Theme' 'spinfinity' \
+|| (echo_stamp "Failed to edit plymouthd.conf!" "ERROR"; exit 1)
 
 echo_stamp "Change files owner"
 chown -R pi:pi /home/pi/.config \
+&& chown -R pi:pi /home/pi/Documents \
 || (echo_stamp "Failed to change files owner!" "ERROR"; exit 1)
 
 echo_stamp "End of software installation"
