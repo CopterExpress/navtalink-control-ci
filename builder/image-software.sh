@@ -107,16 +107,10 @@ cp -f /home/pi/navtalink/wifibroadcast.cfg.gs /boot/wifibroadcast.txt \
 && systemctl enable wifibroadcast@gs \
 || (echo_stamp "Failed to set role!" "ERROR"; exit 1)
 
-echo_stamp "Add xfce4-panel to autostart"
+echo_stamp "Add applications to autostart"
 echo 'xfce4-panel &' >> /home/pi/.config/openbox/autostart
-
-echo_stamp "Add onboard to autostart"
 echo 'onboard &' >> /home/pi/.config/openbox/autostart
-
-echo_stamp "Add nitrogen to autostart"
 echo 'nitrogen --restore &' >> /home/pi/.config/openbox/autostart
-
-echo_stamp "Add nm-applet to autostart"
 echo 'nm-applet &' >> /home/pi/.config/openbox/autostart
 
 echo_stamp "Edit cmdline.txt"
